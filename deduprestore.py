@@ -34,18 +34,17 @@ def remove_duplicates_from_incoming(incoming_store, dupe_store, dry_run=False):
                             print("Remove Dup {}".format(full_name))
                         else:
                             print("Remove Dup {}".format(full_name))
-                            dest_name = os.path.join(dupe_store, full_name)
+                            dest_name = os.path.join(dupe_store, os.path.relpath(full_name, incoming_store))
                             if not os.path.exists(os.path.dirname(dest_name)):
                                 os.makedirs(os.path.dirname(dest_name))
                             os.rename(full_name, dest_name)
                         break
                     else:
                         print("Not matching hash {} -> {}".format(full_name, item[0]))
-            else:
-                print("Not matching filename {}".format(fname))
 
 
 def main(primary_store, incoming_store, dupe_dump):
+    print("Process {} for dupes already in {} and moving to {}".format(incoming_store, primary_store, dupe_dump))
     populate_primary_names(primary_store)
     remove_duplicates_from_incoming(incoming_store, dupe_dump)
 
@@ -55,4 +54,4 @@ if __name__ == "__main__":
         print("Usage: {} <primary> <incoming> <dupe>".format(sys.argv[0]))
         sys.exit(1)
 
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(os.path.abspath(sys.argv[1]), os.path.abspath(sys.argv[2]), os.path.abspath(sys.argv[3]))
